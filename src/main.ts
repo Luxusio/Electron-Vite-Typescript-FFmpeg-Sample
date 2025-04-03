@@ -1,6 +1,7 @@
 import { app, BrowserWindow } from 'electron';
 import path from 'node:path';
 import started from 'electron-squirrel-startup';
+import ffmpeg from 'fluent-ffmpeg';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (started) {
@@ -8,6 +9,30 @@ if (started) {
 }
 
 const createWindow = () => {
+
+  console.log('start setup ffmpeg');
+
+  // https://github.com/kribblo/node-ffmpeg-installer
+  const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
+  console.log('FFmpeg Path:', ffmpegPath);
+  ffmpeg.setFfmpegPath(ffmpegPath);
+
+  // https://github.com/SavageCore/node-ffprobe-installer
+  const ffprobePath = require('@ffprobe-installer/ffprobe').path;
+  console.log('FFprobe Path:', ffprobePath);
+  ffmpeg.setFfprobePath(ffprobePath);
+
+  ffmpeg.getAvailableFormats((err, formats) => {
+    if (err) {
+      console.error('error while running ffmpeg:', err);
+    } else {
+      console.log('ffmpeg is runnning normally');
+      console.log('available file formats', Object.keys(formats).slice(0, 10)); // 일부 포맷만 출력
+    }
+  });
+
+  console.log('done');
+
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 800,
